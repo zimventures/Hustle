@@ -10,16 +10,16 @@ include_directories(../src/)
 enable_testing()
 
 add_executable(
-  JobSystem_Test
+  Hustle_Test
   "SpinLock.cpp"
   "LockedQueue.cpp"
   "ResourcePool.cpp"
 )
 
 target_link_libraries(
-  JobSystem_Test
+  Hustle_Test
   gtest_main
 )
 
 include(GoogleTest)
-gtest_discover_tests(JobSystem_Test)
+gtest_discover_tests(Hustle_Test)

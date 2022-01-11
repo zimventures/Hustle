@@ -5,7 +5,7 @@
 #include <queue>
 #include "LockedQueue.h"
 
-namespace JobSystem {
+namespace Hustle {
 	template<class T, int iCount>
 	class ResourcePool {
 	public:

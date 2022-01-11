@@ -11,7 +11,7 @@
 #include <queue>
 #include <map>
 
-namespace JobSystem {
+namespace Hustle {
 	class Dispatcher {
 	public:
 		const static int FiberPoolSize = 1000;

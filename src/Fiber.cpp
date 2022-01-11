@@ -5,7 +5,7 @@
 #include <iostream>
 #include <Windows.h>
 
-namespace JobSystem {
+namespace Hustle {
 
 	Fiber::Fiber() :
 		m_pJob(nullptr),

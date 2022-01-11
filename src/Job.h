@@ -3,7 +3,7 @@
 #include <functional>
 #include "SpinLock.h"
 
-namespace JobSystem {
+namespace Hustle {
 	typedef std::function<void(void* pArg)> JobEntryPoint;
 
 	class Job : public SpinLock {

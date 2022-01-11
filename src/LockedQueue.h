@@ -3,7 +3,7 @@
 
 #include "SpinLock.h"
 
-namespace JobSystem {
+namespace Hustle {
 	template<class T>
 	class LockedQueue : private SpinLock {
 	public:

@@ -2,7 +2,7 @@
 
 #include <windows.h>
 
-namespace JobSystem {
+namespace Hustle {
 	class Job;
 
 	class Fiber {

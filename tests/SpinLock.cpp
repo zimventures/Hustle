@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "SpinLock.h"
 
-using namespace JobSystem;
+using namespace Hustle;
 
 TEST(SpinLock, TryLockFail) {
 

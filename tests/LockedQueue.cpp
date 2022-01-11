@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "LockedQueue.h"
 
-using namespace JobSystem;
+using namespace Hustle;
 
 const int MaxQueueSize = 100;
 TEST(LockedQueue, SizeCheck) {

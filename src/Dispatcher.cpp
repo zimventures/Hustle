@@ -6,7 +6,7 @@
 #include <thread>
 #include <Windows.h>
 
-namespace JobSystem {
+namespace Hustle {
 
 	bool Dispatcher::Init(int iWorkerThreadCount) {
 

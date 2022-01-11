@@ -3,7 +3,7 @@
 #include <atomic>
 #include <windows.h>
 
-namespace JobSystem {
+namespace Hustle {
 
 	class WorkerThread {
 	public:

@@ -6,7 +6,7 @@
 #include <atomic>
 
 #include <Windows.h>
-namespace JobSystem {
+namespace Hustle {
 
 	class SpinLock {
 	public:

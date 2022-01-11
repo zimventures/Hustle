@@ -7,7 +7,7 @@
 #include <thread>
 #include <vector>
 
-namespace JobSystem {
+namespace Hustle {
 
 	WorkerThread::WorkerThread() :
 		m_dwThreadID(0),

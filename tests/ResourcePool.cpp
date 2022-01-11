@@ -3,7 +3,7 @@
 
 #include <queue>
 
-using namespace JobSystem;
+using namespace Hustle;
 
 const int MaxPoolSize = 100;
 

@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project ("JobSystem")
+project ("Hustle")
 
 # Include main project
 add_subdirectory ("src")
