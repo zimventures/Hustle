@@ -1,10 +1,3 @@
-﻿// FiberSandbox.cpp : Defines the entry point for the application.
-//
-// References: 
-// https://graphitemaster.github.io/fibers/#fibers-oh-my
-// https://github.com/RichieSams/FiberTaskingLib
-
-
 #include <iostream>
 #include <string>
 #include <windows.h>
