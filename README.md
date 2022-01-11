@@ -12,6 +12,12 @@ The `Dispatcher` needs to be tuned for the application needs. As such, there are
 __WARNING__ Currently, there is no special logic in the scheduler to detect and mitigate when all fibers are in a state where they're waiting for jobs 
 that are stuck on the queue. To avoid this scenario, ensure there are enough fibers in the pool to handle the high water mark for fibers. 
 
+# Supportetd Systems
+This demo currently runs on Windows using its Fiber API. It could (should?) be expanded to support the 
+[POSIX fiber constructs](https://linux.die.net/man/2/setcontext) or even the 
+[Boost implementation](https://www.boost.org/doc/libs/1_78_0/libs/fiber/doc/html/fiber/overview.html). Noted below is an interesting article by
+Dale Weiler which uses assembly to perform the fiber (context switching) functionality, to minimize impacts by the OS. 
+
 # Components
 Hustle is a job scheduling system comprised of a few key components. A dispatcher manages the queuing, distribution, and execution of jobs. Worker threads 
 manage the execution of fibers, which in turn execute jobs. 
@@ -98,3 +104,27 @@ The last data structure we need for Hustle is a protected resource pool. This te
 the specified number of resources. Available resources are placed on a `LockedQueue` that can be accessed via the `Get()` and `Release()` methods. 
 
 The `Dispatcher` manages two resource pools: one for available `Fiber`s and another for available `Job`s. 
+
+# Future work/enhancements
+- Add `Dispatcher` methods for starting and waiting on multiple jobs
+- OSX & Linux support
+- Scheduler algorightm to detect & mitigate fiber exhaustion
+- Performance profiling (including a Valgrind memory analysis run)
+
+
+# Additional Reading
+Special thanks go to the following authors:
+
+[Fibers, Oh My!](https://graphitemaster.github.io/fibers/#fibers-oh-my) by [Dale Weiler](https://twitter.com/actualGraphite)
+
+[C++ atomics: from basic to
+advanced. What do they do?](https://www.cs.sfu.ca/~ashriram/Courses/CS431/assets/lectures/Part5/Atomics.pdf) by Fedor Pikus
+
+[Parallelizing the Naughty Dog
+engine using fibers](https://ubm-twvideo01.s3.amazonaws.com/o1/vault/gdc2015/presentations/Gyrling_Christian_Parallelizing_The_Naughty.pdf) by 
+[Christian Gyrling](https://twitter.com/cgyrling)
+
+[Correctly implementing a spinlock in C++](https://rigtorp.se/spinlock/) by [Erik Rigtorp](https://mobile.twitter.com/rigtorp)
+Erik also has a [great list of modern C++ resources](https://github.com/rigtorp/awesome-modern-cpp)
+
+[Fibers: the Most Elegant Windows API](https://nullprogram.com/blog/2019/03/28/) by [Chris Wellons](https://github.com/skeeto)

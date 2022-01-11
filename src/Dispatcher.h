@@ -30,8 +30,6 @@ namespace Hustle {
 		JobHandle AddJob(JobEntryPoint entryPoint, void* pUserData);
 		void WaitForJob(JobHandle hJob);
 
-		// TODO: Add high water mark functionality
-
 		size_t GetJobQueueDepth() { return m_Jobs.Size(); }
 		size_t GetFreeJobCount() { return m_JobPool.GetFreeCount(); }
 		size_t GetFreeJobTotal() { return m_JobPool.GetTotalCount(); }
