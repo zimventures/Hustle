@@ -1,11 +1,12 @@
-# 'googletest' is the folder with Google Test sources
+
 # For Windows: Prevent overriding the parent project's compiler/linker settings
-#set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-#add_subdirectory("googletest")
-#include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+add_subdirectory("googletest")
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-# TODO: Add tests and install targets if needed.
+include_directories(../src/)
+
 enable_testing()
 
 add_executable(

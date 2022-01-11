@@ -5,6 +5,7 @@
 
 #include <atomic>
 
+#include <Windows.h>
 namespace JobSystem {
 
 	class SpinLock {
@@ -24,7 +25,7 @@ namespace JobSystem {
 
 					// WARNING: It's noted here (https://graphitemaster.github.io/fibers/#avoid-the-pause-instruction) that 
 					// this may be a much larger CPU stall than we're hoping for due to recent Intel architecture changes
-					_mm_pause();
+					YieldProcessor();	// Under the hood will call _mm_pause()
 				}
 			}
 		}

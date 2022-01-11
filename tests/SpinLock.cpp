@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../SpinLock.h"
+#include "SpinLock.h"
 
 using namespace JobSystem;
 

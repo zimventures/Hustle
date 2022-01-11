@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../LockedQueue.h"
+#include "LockedQueue.h"
 
 using namespace JobSystem;
 

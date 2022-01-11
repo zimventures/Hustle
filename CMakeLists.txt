@@ -8,3 +8,4 @@ project ("JobSystem")
 # Include main project
 add_subdirectory ("src")
 
+add_subdirectory ("tests")
