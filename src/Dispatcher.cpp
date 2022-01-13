@@ -95,8 +95,13 @@ namespace Hustle {
 		// Poll on the job until it is done
 		while (hJob->TryLock() != true) {
 
-			// Job hasn't finished yet, switch back to the scheduler
-			GetCurrentFiber()->GetParent()->SwitchTo();
+			// In case this is being called from outside of the fiber system, just yield back to the os
+			auto currentFiber = GetCurrentFiber();
+			if (currentFiber) {
+				currentFiber->GetParent()->SwitchTo();
+			} else {
+				Yield();
+			}			
 		}
 
 		// We got the lock, go ahead and unlock it...
@@ -142,34 +147,41 @@ namespace Hustle {
 		pWorkerThread->SetState(WorkerThread::State::Running);
 
 		while (pWorkerThread->GetState() == WorkerThread::State::Running) {
+			
+			bool bDidWork = false;
 
-			// Go through the wait queue and process those jobs
-			auto fiberIt = pendingFibers.begin();
-			while (fiberIt != pendingFibers.end()) {
+			// Go through the wait queue and process those jobs			
+			if (pendingFibers.size()) {
+				auto fiberIt = pendingFibers.begin();
+				while (fiberIt != pendingFibers.end()) {
 
-				Fiber* pPendingFiber = *fiberIt;
-				pPendingFiber->SwitchTo();
+					bDidWork = true;
 
-				switch (pPendingFiber->GetState()) {
-				case Fiber::State::Running:
-					// Don't do anything...we'll get to it later
-					fiberIt++;
-					break;
-				case Fiber::State::Idle:
-					// Remove the fiber from the pending list
-					fiberIt = pendingFibers.erase(fiberIt);
+					Fiber* pPendingFiber = *fiberIt;
+					pPendingFiber->SwitchTo();
 
-					// Free the job's spinlock, in case there is a pending job on the wait queue
-					pPendingFiber->CurrentJob()->Unlock();
+					switch (pPendingFiber->GetState()) {
+					case Fiber::State::Running:
+						// Don't do anything...we'll get to it later
+						fiberIt++;
+						break;
+					case Fiber::State::Idle:
+						// Remove the fiber from the pending list
+						fiberIt = pendingFibers.erase(fiberIt);
 
-					// Put the fiber and job back into their respective free queues
-					dispatcher.m_FiberPool.Release(pPendingFiber);
-					dispatcher.m_JobPool.Release(pPendingFiber->CurrentJob());
+						// Free the job's spinlock, in case there is a pending job on the wait queue
+						pPendingFiber->CurrentJob()->Unlock();
+
+						// Put the fiber and job back into their respective free queues
+						dispatcher.m_FiberPool.Release(pPendingFiber);
+						dispatcher.m_JobPool.Release(pPendingFiber->CurrentJob());
+					}
 				}
 			}
-
+			
 			if (pJob = dispatcher.m_Jobs.Pop()) {
 
+				bDidWork = true;
 				// Grab a new fiber
 				// TODO: Handle the case where there are no more fibers and every worker is waiting for one...
 				pJobFiber = nullptr;
@@ -198,6 +210,10 @@ namespace Hustle {
 					break;
 				}
 			}
+
+			// We didn't do anything, take a breather
+			if (bDidWork == false)
+				_mm_pause();
 		}
 
 		// Set the current state to done so callers know we're...done. 
