@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "ResourcePool.h"
+#include "hustle/ResourcePool.h"
 
 #include <queue>
 

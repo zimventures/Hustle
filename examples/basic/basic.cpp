@@ -2,23 +2,23 @@
 #include <string>
 #include <windows.h>
 
-#include "Job.h"
-#include "Dispatcher.h"
+#include "hustle/Job.h"
+#include "hustle/Dispatcher.h"
 
 using namespace std;
 using namespace Hustle;
 
 void ThirdLevelJob(void* pUserData) {
-    
+
 }
 
 void SubJob(void* pUserData) {
 
-   auto hJob = Dispatcher::GetInstance().AddJob(ThirdLevelJob, nullptr);
-   Dispatcher::GetInstance().WaitForJob(hJob);
+    auto hJob = Dispatcher::GetInstance().AddJob(ThirdLevelJob, nullptr);
+    Dispatcher::GetInstance().WaitForJob(hJob);
 }
 
-void JobFunction(void *pUserData) {
+void JobFunction(void* pUserData) {
 
     auto hJob = Dispatcher::GetInstance().AddJob(SubJob, nullptr);
     Dispatcher::GetInstance().WaitForJob(hJob);
@@ -39,7 +39,7 @@ int main()
 
     std::string input;
     bool bRunning = true;
-    while(bRunning) {
+    while (bRunning) {
         std::cout << "0|1|2|3> ";
         std::cin >> input;
         std::cout << std::endl;
@@ -63,14 +63,14 @@ int main()
             std::cout << "jobs to run: " << Dispatcher::GetInstance().GetJobQueueDepth() << std::endl;
             std::cout << "available jobs: " << Dispatcher::GetInstance().GetFreeJobCount() << std::endl;
             std::cout << "total job pool size: " << Dispatcher::GetInstance().GetFreeJobTotal() << std::endl;
-            
+
             std::cout << "available fibers: " << Dispatcher::GetInstance().GetFiberPoolFree() << std::endl;
-            std::cout << "total fiber pool size: " << Dispatcher::GetInstance().GetFiberPoolTotal() << std::endl;           
+            std::cout << "total fiber pool size: " << Dispatcher::GetInstance().GetFiberPoolTotal() << std::endl;
 
             // Print out the high water mark for the various queues
 #ifdef _DEBUG
             std::cout << "Free Job High Water Mark: " << Dispatcher::GetInstance().GetFreeJobHighWaterMark() << std::endl;
-            std::cout << "Free Fiber High Water Mark: " << Dispatcher::GetInstance().GetFreeFiberHighWaterMark() << std::endl;            
+            std::cout << "Free Fiber High Water Mark: " << Dispatcher::GetInstance().GetFreeFiberHighWaterMark() << std::endl;
 #endif
             break;
         case 0:
@@ -81,7 +81,7 @@ int main()
     // TODO: Test/handle when there are jobs in flight and we try to shut things down
     std::cout << "Shutting down Scheduler" << std::endl;
     Dispatcher::GetInstance().Shutdown();
-    
+
     std::cout << "Done." << endl;
     return 0;
 }

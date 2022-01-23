@@ -20,6 +20,8 @@ add_executable(
   "ResourcePool.cpp"
 )
 
+target_link_libraries(Hustle_Test HustleStaticLib)
+
 target_link_libraries(
   Hustle_Test
   gtest_main

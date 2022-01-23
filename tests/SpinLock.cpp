@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "SpinLock.h"
+#include "hustle/SpinLock.h"
 
 using namespace Hustle;
 

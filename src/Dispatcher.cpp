@@ -1,5 +1,5 @@
-#include "Dispatcher.h"
-#include "Fiber.h"
+#include "hustle/Dispatcher.h"
+#include "hustle/Fiber.h"
 
 #include <assert.h>
 #include <iostream>

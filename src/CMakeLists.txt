@@ -7,10 +7,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_library (HustleStaticLib STATIC
-             "SpinLock.h" "Fiber.cpp" "Dispatcher.cpp" "WorkerThread.cpp" "WorkerThread.h" "ResourcePool.h" "LockedQueue.h" )
+add_library (HustleStaticLib STATIC "Fiber.cpp" "Dispatcher.cpp" "WorkerThread.cpp")
 
-# Add source to this project's executable.
-# add_executable (Hustle "FiberSandbox.cpp"  "SpinLock.h" "Fiber.cpp" "Dispatcher.cpp" "WorkerThread.cpp" "WorkerThread.h" "ResourcePool.h" "LockedQueue.h" )
-
-
+target_include_directories(HustleStaticLib PUBLIC ../include)
