@@ -27,7 +27,6 @@ void JobFunction(void* pUserData) {
 
 int main()
 {
-    Job job(JobFunction, nullptr);
 
     std::cout << "Starting Scheduler" << std::endl;
     if (Dispatcher::GetInstance().Init() == false) {

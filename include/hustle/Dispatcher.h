@@ -12,9 +12,10 @@
 #include <map>
 
 namespace Hustle {
+
 	class Dispatcher {
 	public:
-		const static int FiberPoolSize = 1000;
+		const static int FiberPoolSize = 100;
 		const static int JobPoolSize = 10000;
 
 		static Dispatcher& GetInstance() {

@@ -10,6 +10,9 @@ namespace Hustle {
 
 	bool Dispatcher::Init(int iWorkerThreadCount) {
 
+		// Set a growth factor on the fiber pool
+		m_FiberPool.SetGrowthFactor(10);
+
 		bool bReturn = true;
 		// Create a hash map of the Fiber objects, keyed off of the OS fiber handle. 
 		for (int i = 0; i < Dispatcher::FiberPoolSize; i++)

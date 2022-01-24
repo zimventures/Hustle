@@ -8,7 +8,17 @@ namespace Hustle {
 
 	class Job : public SpinLock {
 	public:
-		Job() = default;
+		Job() :
+			m_pUserData(nullptr),
+			m_JobEntrypoint(nullptr) {
+		}
+		
+		Job(const Job&) = default;
+
+		/*Job& operator=(const Job&) {
+			return Job();
+		}*/
+
 		Job(JobEntryPoint entryPoint, void* pUserData = nullptr) :
 			m_JobEntrypoint(entryPoint),
 			m_pUserData(pUserData) {

@@ -7,6 +7,7 @@
 
 namespace Hustle {
 
+	
 	Fiber::Fiber() :
 		m_pJob(nullptr),
 		m_hFiber(nullptr),
@@ -37,7 +38,8 @@ namespace Hustle {
 		if (m_hFiber)
 			DeleteFiber(m_hFiber);
 	}
-
+	
+	
 	void Fiber::Activate(Job* pJob, Fiber* pParent) {
 
 		// The thread that we'll switch back to when the job is complete
