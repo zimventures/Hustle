@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <windows.h>
 
 namespace Hustle {
@@ -26,6 +27,8 @@ namespace Hustle {
 		Job* CurrentJob() { return m_pJob; }
 		void* GetFiberHandle() { return m_hFiber; }
 
+		static Fiber* Fiber::GetCurrentFiber();
+
 		void SwitchTo() { ::SwitchToFiber(m_hFiber); }
 
 	private:
@@ -43,5 +46,9 @@ namespace Hustle {
 
 		// Current job being executed
 		Job* m_pJob;
+
+		// A map of the fibers, keyed on the pointer returned by CreateFiber()
+		// This allows us to call the Win32 GetCurrentFiber() function and grab the Fiber object. 
+		static std::map<void*, Fiber*>	s_FiberMap;
 	};
 }

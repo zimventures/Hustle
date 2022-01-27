@@ -7,6 +7,7 @@
 
 namespace Hustle {
 
+	
 	Fiber::Fiber() :
 		m_pJob(nullptr),
 		m_hFiber(nullptr),
@@ -16,6 +17,8 @@ namespace Hustle {
 		// TODO: Allow the stack size to be configured
 		m_hFiber = CreateFiber(0, Run, this);
 
+		// Add to the static fiber map
+		s_FiberMap[m_hFiber] = this;
 	}
 
 	Fiber::Fiber(const Fiber& fiber) :
@@ -24,6 +27,9 @@ namespace Hustle {
 		m_pParent(fiber.m_pParent),
 		m_hFiber(fiber.m_hFiber) {
 
+		// Remove from the static fiber map
+		s_FiberMap.erase(m_hFiber);
+		
 	}
 
 	Fiber::Fiber(void* pFiberHandle) :
@@ -37,7 +43,8 @@ namespace Hustle {
 		if (m_hFiber)
 			DeleteFiber(m_hFiber);
 	}
-
+	
+	
 	void Fiber::Activate(Job* pJob, Fiber* pParent) {
 
 		// The thread that we'll switch back to when the job is complete
@@ -48,6 +55,20 @@ namespace Hustle {
 
 		// Enable the fiber
 		SwitchToFiber(m_hFiber);
+	}
+
+	Fiber* Fiber::GetCurrentFiber() {
+
+		// OS handle of the current fiber
+		void* pCurrentFiber = ::GetCurrentFiber();
+
+		// Reach into the global map of Fiber objects, searching by the OS handle
+		auto fiberIt = s_FiberMap.find(pCurrentFiber);
+		if (fiberIt == s_FiberMap.end())
+			return nullptr;
+		else
+			return fiberIt->second;
+
 	}
 
 	void __stdcall Fiber::Run(void* pData) {
@@ -77,4 +98,6 @@ namespace Hustle {
 		// We should never get here
 		assert(false);
 	}
+
+	std::map<void*, Fiber*>	Fiber::s_FiberMap;
 }
