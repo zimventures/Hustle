@@ -81,8 +81,7 @@ namespace Hustle {
 
 					m_ResizeLock.Unlock();
 
-					// Bump our counters
-					
+					// Bump our counters					
 					m_iInUseCounter++;
 
 					// Only called in DEBUG mode
@@ -91,7 +90,7 @@ namespace Hustle {
 			}			
 
 			return pResource;
-		}
+		} // end of ResourcePool::Get()
 
 		void Release(T* pResource) {
 
