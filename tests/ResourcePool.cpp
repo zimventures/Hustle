@@ -14,7 +14,8 @@ TEST(ResourcePool, FreeCount) {
 	};
 
 
-	ResourcePool<TestResource, MaxPoolSize> testPool;
+	ResourcePool<TestResource> testPool;
+	testPool.Grow(MaxPoolSize);
 	EXPECT_EQ(testPool.GetFreeCount(), MaxPoolSize);
 	EXPECT_EQ(testPool.GetTotalCount(), MaxPoolSize);
 

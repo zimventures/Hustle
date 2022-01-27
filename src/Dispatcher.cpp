@@ -7,16 +7,17 @@
 #include <Windows.h>
 
 namespace Hustle {
-
-	bool Dispatcher::Init(int iWorkerThreadCount) {
+	
+	bool Dispatcher::Init(int iFiberPoolSize, int iJobPoolSize, int iWorkerThreadCount) {
 
 		// Set a growth factor on the fiber pool
+		m_FiberPool.Grow(iFiberPoolSize);
 		m_FiberPool.SetGrowthFactor(10);
 
-		bool bReturn = true;
-		// Create a hash map of the Fiber objects, keyed off of the OS fiber handle. 
-		for (int i = 0; i < Dispatcher::FiberPoolSize; i++)
-			m_FiberMap[m_FiberPool[i]->GetFiberHandle()] = m_FiberPool[i];
+		m_JobPool.Grow(iJobPoolSize);
+		m_JobPool.SetGrowthFactor(10);
+
+		bool bReturn = true;		
 
 		// Create a thread for each core, except on core 0
 		if (iWorkerThreadCount == -1)
@@ -29,10 +30,14 @@ namespace Hustle {
 		// Start up each thread, setting CPU affinity for each one.
 		for (int i = 0; i < m_iWorkerThreadCount; i++) {
 
+			// Creating this temp variable to avoid C6385
+			WorkerThread* pThread = &m_pWorkerThreads[i];
+
 			// m_iWorkerThreadCount is always the number of CPUs, less one. 
 			// We don't want any worker threads running on CPU 0, so always add 1 to i. 
-			if (m_pWorkerThreads[i].Start(i + 1) == false) {
-				m_LastError = m_pWorkerThreads[i].GetLastError();
+			if (pThread->Start(i + 1) == false) {
+				
+				m_LastError = pThread->GetLastError();
 				bReturn = false;
 			}
 		}
@@ -47,7 +52,10 @@ namespace Hustle {
 
 				// If any of the threads aren't in the ready state, set the flag to false
 				for (auto i = 0; i < m_iWorkerThreadCount; i++) {
-					if (m_pWorkerThreads[i].GetState() != WorkerThread::State::Running) {
+					// Temp variable to void C6385
+					WorkerThread* pWorkerThread = &m_pWorkerThreads[i];
+
+					if (pWorkerThread->GetState() != WorkerThread::State::Running) {
 						bAllThreadsReady = false;
 						Yield();
 						break;
@@ -58,7 +66,7 @@ namespace Hustle {
 
 		return bReturn;
 	}
-
+	
 	void Dispatcher::Shutdown() {
 
 		// Stop all of the threads
@@ -68,7 +76,7 @@ namespace Hustle {
 		if (m_pWorkerThreads)
 			delete[] m_pWorkerThreads;
 	}
-
+	
 	JobHandle Dispatcher::AddJob(JobEntryPoint entryPoint, void* pUserData) {
 
 		Job* pJob;
@@ -92,14 +100,14 @@ namespace Hustle {
 		m_Jobs.Push(pJob);
 		return pJob;
 	}
-
+	
 	void Dispatcher::WaitForJob(JobHandle hJob) {
 
 		// Poll on the job until it is done
 		while (hJob->TryLock() != true) {
 
 			// In case this is being called from outside of the fiber system, just yield back to the os
-			auto currentFiber = GetCurrentFiber();
+			auto currentFiber = Fiber::GetCurrentFiber();
 			if (currentFiber) {
 				currentFiber->GetParent()->SwitchTo();
 			} else {
@@ -110,21 +118,24 @@ namespace Hustle {
 		// We got the lock, go ahead and unlock it...
 		hJob->Unlock();
 	}
+	
+	void Dispatcher::YieldToScheduler() {
 
-	Fiber* Dispatcher::GetCurrentFiber() {
-
-		// OS handle of the current fiber
-		void* pCurrentFiber = ::GetCurrentFiber();
-
-		// Reach into the global map of Fiber objects, searching by the OS handle
-		auto fiberIt = m_FiberMap.find(pCurrentFiber);
-		if (fiberIt == m_FiberMap.end())
-			return nullptr;
-		else
-			return fiberIt->second;
-
+		// In case this is being called from outside of the fiber system, just yield back to the os
+		auto currentFiber = Fiber::GetCurrentFiber();
+		if (currentFiber) {
+			currentFiber->GetParent()->SwitchTo();
+		}
+		else {
+			Yield();
+		}
 	}
 
+	/**
+	 * @brief Entrypoint for each worker thread. 
+	 * @param pData Pointer to a WorkerThread object
+	 * @return - Should always be 0
+	*/
 	DWORD WINAPI Dispatcher::Scheduler(LPVOID pData) {
 
 		// Convert the thread to a fiber
@@ -225,7 +236,11 @@ namespace Hustle {
 		return 0;
 	}
 
+	/**
+	 * @brief Default constructor, hidden behind the singleton pattern.
+	*/
 	Dispatcher::Dispatcher() :
+		m_RunningThreads(0),
 		m_iWorkerThreadCount(0),
 		m_pWorkerThreads(nullptr) {
 

@@ -29,7 +29,7 @@ int main()
 {
 
     std::cout << "Starting Scheduler" << std::endl;
-    if (Dispatcher::GetInstance().Init() == false) {
+    if (Dispatcher::GetInstance().Init(100, 100) == false) {
         std::cout << "Failed: " << Dispatcher::GetInstance().GetLastError() << std::endl;
         return -1;
     }
@@ -45,16 +45,16 @@ int main()
 
         switch (std::stoi(input)) {
         case 1:
-            std::cout << "Adding 1 jobs to queue";
+            std::cout << "Adding 300 jobs to queue";
 
-            for (auto x = 0; x < 1; x++)
+            for (auto x = 0; x < 300; x++)
                 Dispatcher::GetInstance().AddJob(JobFunction, nullptr);
 
             break;
         case 2:
-            std::cout << "Adding 300 jobs to queue";
+            std::cout << "Adding 3000 jobs to queue";
 
-            for (auto x = 0; x < 300; x++)
+            for (auto x = 0; x < 3000; x++)
                 Dispatcher::GetInstance().AddJob(JobFunction, nullptr);
 
             break;

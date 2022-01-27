@@ -111,11 +111,11 @@ The `Dispatcher` manages two resource pools: one for available `Fiber`s and anot
 - Scheduler algorightm to detect & mitigate fiber exhaustion
 - Performance profiling
 - Valgrind
-- Add a Yield() call to the Dispatcher. Acts like the WaitForJob(), except it doesn't poll on spinlock, it simply starts up the scheduler again.
-- Add a flag (and logic) to allow resource pools to grow when they're below a specific threshold
 - Add an optional timeout vailute to `Dispatcher::WaitForJob()`
 - Add a new IMGui-based demo, visualizing queues and adding buttons to manage running jobs
 - Full documentation
+- Full test coverage
+
 
 
 # Additional Reading

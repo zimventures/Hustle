@@ -8,7 +8,7 @@
 
 namespace Hustle {
 
-	template<class T, int iCount>
+	template<class T>
 	class ResourcePool {
 	public:
 
@@ -20,15 +20,7 @@ namespace Hustle {
 			m_iInUseCounter(0),
 			m_pPool(nullptr),
 			m_iResourcCount(0) {
-
-			m_iResourcCount = iCount;
-
-			// Add all of the newly allocated items to the queue
-			for (int i = 0; i < m_iResourcCount; i++) {
-				T* pResource = new T();
-				m_Pool.push_back(pResource);
-				m_FreeResources.Push(pResource);
-			}
+			
 		}
 		
 		~ResourcePool() {
@@ -74,36 +66,29 @@ namespace Hustle {
 						// Only called in DEBUG mode
 						HighWaterCheck();
 
-						m_ResizeLock.Unlock();
+						m_ResizeLock.Unlock(); 
 						return pResource;
 					}
 
 					// Still nothing available - let's grow the pool
-					int iItemsToGrow = m_iResourcCount * m_fGrowthFactor;
-					for (auto i = 0; i < iItemsToGrow; i++) {
-						T* pResource = new T();
-						m_Pool.push_back(pResource);
-						m_FreeResources.Push(pResource);
-						m_iResourcCount++;
-					}
+					int iGrowSize = (int)(m_iResourcCount * m_fGrowthFactor);
+					assert(iGrowSize != 0);
+					Grow(iGrowSize);
+					
+					// Alright...get one for real this time
+					pResource = m_FreeResources.Pop();
+					assert(pResource != nullptr);
 
 					m_ResizeLock.Unlock();
 
-					// Alright...get one for real this time
-					pResource = m_FreeResources.Pop();
+					// Bump our counters
+					
+					m_iInUseCounter++;
 
-					// Got one - great!
-					if (pResource) {
-						m_iInUseCounter++;
-
-						// Only called in DEBUG mode
-						HighWaterCheck();
-
-						return pResource;
-					}
+					// Only called in DEBUG mode
+					HighWaterCheck();					
 				}
-			}
-			
+			}			
 
 			return pResource;
 		}
@@ -112,6 +97,24 @@ namespace Hustle {
 
 			m_iInUseCounter--;
 			m_FreeResources.Push(pResource);
+		}
+
+		/**
+		 * @brief Increase the size of resources in the pool.
+		 * @param iCount - The number of resources to add to the pool
+		 * @return - The new total number of items in the pool
+		*/
+		int Grow(int iCount) {
+
+			// TODO: Can this be optimized?
+			for (int i = 0; i < iCount; i++) {
+				T* pResource = new T();
+				m_Pool.push_back(pResource);
+				m_FreeResources.Push(pResource);
+				m_iResourcCount++;
+			}
+
+			return m_iResourcCount;
 		}
 
 		int GetTotalCount() { return m_iResourcCount; }
@@ -171,7 +174,7 @@ namespace Hustle {
 		// Performance metrics
 		SpinLock m_StatsLock;
 		int m_iHighWaterMark = { 0 };
-		std::atomic<int> m_iInUseCounter;
+		std::atomic<int> m_iInUseCounter;		
 
 		// Performance methods that are only available/called if running in DEBUG mode
 #ifdef _DEBUG

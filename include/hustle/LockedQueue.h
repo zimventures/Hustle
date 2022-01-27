@@ -11,6 +11,7 @@ namespace Hustle {
 		void Push(T val) {
 			Lock();
 			m_Queue.push(val);
+			
 			Unlock();
 		}
 
@@ -39,4 +40,5 @@ namespace Hustle {
 	private:
 		std::queue<T>	m_Queue;
 	};
+
 }
